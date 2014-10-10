@@ -1,0 +1,99 @@
+Caki is a library that implements a simple interface 
+that reads primitive serialized objects from a file.
+
+You have to follow the syntax in order to Caki understands the
+data saved into the file.
+
+The Syntax:
+
+	* Comments begin with a '#'
+	* Comments are ignored
+	* Empty spaces are ignored
+	* Empty lines are ignored
+	* Identifiers (keys) are [_a-zA-Z0-9]+
+
+Comments begin with a '#', eg.:
+
+# This is a comment
+
+Each node is a pair of a key and a value, like:
+
+<key> <value>;
+
+You can declare subnodes too:
+
+<key> {
+	<key> <value>;
+	<key> <value>;
+	.
+	.
+	.
+}
+
+You have to put a semicollon (;) at the end of line.
+
+Example file:
+-----------------------------------
+
+# This is an example file
+
+name "George Lucas";
+
+login {
+	username "root";
+	password "123456";
+}
+
+pi 3.14159;
+bits 32;
+
+-------------------------------------
+
+For access the values you will use the functions `caki_get_<type>`.
+You have to use the node name to access it, for subnodes you have to
+use a dot (call <key>.<key>), eg.:
+
+To access username in example above you will do:
+-------------------------------------
+char *username;
+CakiNode *example;
+.
+.
+.
+username = caki_get_str("login.username", example);
+
+--------------------------------------
+
+An example to access all items in example above:
+--------------------------------------
+#include <stdio.h>
+#include <caki.h>
+
+
+int main(int argc, char **argv)
+{
+	CakiNode *example;
+	char *name, *username;
+	float pi;
+	int bits;
+
+	ex = caki_parse("example");
+
+	name = caki_get_str("name", example);
+	username = caki_get_str("login.username", example);
+	pi = caki_get_float("pi", example);
+	bits = caki_get_int("bits", example);
+
+	printf("name: %s\n"
+		"username: %s\n"
+		"pi: %f\n"
+		"bits: %d\n", name, username, pi, bits);
+
+	caki_free(example);
+
+	return 0;
+}
+
+-----------------------------------
+
+For more information about functions read 'src/caki.h'

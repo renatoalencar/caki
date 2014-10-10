@@ -1,0 +1,43 @@
+
+OBJ = parser.o node.o caki.o tokenizer.o
+LDFLAGS = -shared @LDFLAGS@
+CFLAGS = @DEFS@ @CFLAGS@
+CC = @CC@
+AR = ar
+INSTALL = @INSTALL@
+PACKAGE = @PACKAGE@
+
+SOURCES = parser.c parser.h node.c node.h caki.c \
+	 caki.h tokenizer.c tokenizer.h
+
+CAKISTATIC = lib$(PACKAGE).a
+CAKIDINAMIC = lib$(PACKAGE).so
+
+exec_prefix = @exec_prefix@
+prefix = @prefix@
+libdir = @libdir@
+includedir = @includedir@
+
+all: $(CAKISTATIC) $(CAKIDINAMIC)
+
+$(CAKIDINAMIC): $(OBJ)
+	$(CC) $(LDFLAGS) $(OBJ) -o $@
+
+$(CAKISTATIC): $(OBJ)
+	$(AR) r $@ $(OBJ)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm $(OBJ)
+
+distclean: clean
+	rm libcaki.so libcaki.a Makefile
+
+distdir: $(SOURCES)
+	cp $(SOURCES) $(distdir)
+
+install:
+	$(INSTALL) -t $(libdir) $(CAKISTATIC) $(CAKIDINAMIC)
+	$(INSTALL) -m 644 -t $(includedir) caki.h
