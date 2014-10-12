@@ -1,5 +1,5 @@
 Caki is a library that provides a simple interface 
-that reads primitive serialized objects from a file.
+that reads primitive persistent data from a file.
 
 You have to follow the syntax in order to Caki understands the
 data saved into the file.
