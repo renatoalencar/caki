@@ -41,7 +41,7 @@ float caki_get_float(char *code, CakiNode *root)
 
 	if (n == NULL || n->v_ptr == NULL)
 		return 0.0;
-	if (n->type == TFLOAT)
+	if (n->type == CAKI_TYPE_FLOAT)
 		return *((float *) n->v_ptr);
 
 	return 0.0;
@@ -55,7 +55,7 @@ int caki_get_int(char *code, CakiNode *root)
 
 	if (n == NULL || n->v_ptr == NULL)
 		return 0;
-	if (n->type == TINT)
+	if (n->type == CAKI_TYPE_INT)
 		return *((int *) n->v_ptr);
 
 	return 0;
@@ -90,7 +90,7 @@ CakiNode *caki_get_node(char *code, CakiNode *root)
 	if (node == NULL)
 		return NULL;
 
-	if (code[i] == '.' && node->type == TNODE)
+	if (code[i] == '.' && node->type == CAKI_TYPE_NODE)
 		return caki_get_node(&code[i+1], (CakiNode *) node->v_ptr);
 	else
 		return node;

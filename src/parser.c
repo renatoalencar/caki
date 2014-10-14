@@ -68,22 +68,22 @@ CakiNode *caki_parse_statement(CakiToken **tk)
 			int *integer;
 			integer = (int *) malloc(sizeof(int));
 			*integer = atoi((*tk)->content);
-			new->type = TINT;
+			new->type = CAKI_TYPE_INT;
 			new->v_ptr = (void *) integer;
 		}
 		else if (caki_parser_accept(*tk, T_FLOAT)) {
 			float *ft;
 			ft = (float *) malloc(sizeof(float));
 			*ft = (float) atof((*tk)->content);
-			new->type = TFLOAT;
+			new->type = CAKI_TYPE_FLOAT;
 			new->v_ptr = (void *) ft;
 		}
 		else if (caki_parser_accept(*tk, T_STRING)) {
-			new->type = TSTR;
+			new->type = CAKI_TYPE_STR;
 			new->v_ptr = (void *) (*tk)->content;
 		}
 		else if (caki_parser_accept(*tk, T_LBRACE)) {
-			new->type = TNODE;
+			new->type = CAKI_TYPE_NODE;
 			new->v_ptr = __caki_parse_node(tk);
 			return new;
 		}

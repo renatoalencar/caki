@@ -19,10 +19,10 @@
 #define _CAKI_H
 
 typedef enum {
-	TINT,
-	TSTR,
-	TNODE,
-	TFLOAT
+	CAKI_TYPE_INT,
+	CAKI_TYPE_STR,
+	CAKI_TYPE_NODE,
+	CAKI_TYPE_FLOAT
 } CakiNodeType;
 
 /* The Node 

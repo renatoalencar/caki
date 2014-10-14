@@ -41,7 +41,7 @@ void caki_node_free(CakiNode *root)
 {
 	if (root->next != NULL)
 		caki_node_free(root->next);
-	if (root->type == TNODE)
+	if (root->type == CAKI_TYPE_NODE)
 		caki_node_free((CakiNode *) root->v_ptr);
 	else
 		free(root->v_ptr);
