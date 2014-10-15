@@ -23,8 +23,12 @@
 /* Allocate a new Node a return */
 CakiNode *caki_node_new();
 
-/* Insert a new Node into other */
-void caki_node_insert(CakiNode *, CakiNode *);
+/* Insert a new Node into other 
+ * 
+ * root	- A pointer to the first element of the list.
+ * new	- The element that will be inserted into root.
+ */
+void caki_node_insert(CakiNode *root, CakiNode *new);
 
 /* Free all the space of Node and childs */
 void caki_node_free(CakiNode *);

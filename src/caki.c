@@ -29,8 +29,10 @@ CakiNode *caki_parse(char *filename)
 
 	if ((fd = fopen(filename, "r")) == NULL)
 		return NULL;
+
 	out = __caki_parse(fd);
 	fclose(fd);
+
 	return out;
 }
 
@@ -42,6 +44,7 @@ float caki_get_float(char *code, CakiNode *root)
 
 	if (n == NULL || n->v_ptr == NULL)
 		return 0.0;
+
 	if (n->type == CAKI_TYPE_FLOAT)
 		return *((float *) n->v_ptr);
 
@@ -56,6 +59,7 @@ int caki_get_int(char *code, CakiNode *root)
 
 	if (n == NULL || n->v_ptr == NULL)
 		return 0;
+
 	if (n->type == CAKI_TYPE_INT)
 		return *((int *) n->v_ptr);
 
@@ -70,6 +74,7 @@ void *caki_get_ptr(char *code, CakiNode *root)
 
 	if (n != NULL)
 		return n->v_ptr;
+
 	return NULL;
 }
 
@@ -79,18 +84,25 @@ CakiNode *caki_get_node(char *code, CakiNode *root)
 	char node_name[256];
 	int i;
 
+	/* Find the name of the node; until find a dot (.) or the end
+	 * of the string. The dot indicates that it's trying to find
+	 * a subnode. 
+	 */
 	for (i = 0; code[i] != '\0' && code[i] != '.' && i < 256; i++)
 		node_name[i] = code[i];
 	node_name[i] = '\0';
 
+	/* Search for node with the name given */
 	for (node = root; node != NULL; node = node->next) {
 		if (strcmp(node->name, node_name) == 0)
 			break;
 	}
 
+	/* Node not found */
 	if (node == NULL)
 		return NULL;
 
+	/* When a dot is found search for a subnode */
 	if (code[i] == '.' && node->type == CAKI_TYPE_NODE)
 		return caki_get_node(&code[i+1], (CakiNode *) node->v_ptr);
 	else

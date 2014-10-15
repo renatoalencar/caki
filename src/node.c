@@ -24,6 +24,7 @@ CakiNode *caki_node_new()
 	return (CakiNode *) calloc(1, sizeof(CakiNode));
 }
 
+/* Insert a element at end of list */
 void caki_node_insert(CakiNode *root, CakiNode *new)
 {
 

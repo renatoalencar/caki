@@ -42,6 +42,7 @@ void caki_token_free(CakiToken *t)
 	free(t);
 }
 
+/* Insert a token `new' at end of `head' */
 int caki_token_insert(CakiToken *head, CakiToken *new) 
 {
 
@@ -56,17 +57,19 @@ int caki_token_insert(CakiToken *head, CakiToken *new)
 	return 0;
 }
 
+/* Generate tokens of `stream' */
 CakiToken *caki_tokenize(FILE *stream)
 {
 	char c;
-	CakiToken *h, *tk;
+	CakiToken *tokens, *tk;
 	int line = 0, column = 0;
 
-	h = caki_token_new();
+	tokens = caki_token_new();
 
 	while ((c = getc(stream)) != EOF) {
 		switch (c) {
 		case '#':
+			/* Ignore comments */
 			IGNORE_LINE(stream);
 			line++;
 			column = 0;
@@ -76,14 +79,14 @@ CakiToken *caki_tokenize(FILE *stream)
 			tk->type = T_LBRACE;
 			tk->line = line;
 			tk->column = column;
-			caki_token_insert(h, tk);
+			caki_token_insert(tokens, tk);
 			break;
 		case '}':
 			tk = caki_token_new();
 			tk->type = T_RBRACE;
 			tk->line = line;
 			tk->column = column;
-			caki_token_insert(h, tk);
+			caki_token_insert(tokens, tk);
 			break;
 		case '"':
 		{
@@ -94,7 +97,7 @@ CakiToken *caki_tokenize(FILE *stream)
 			tk->content = caki_token_string(stream, &line, &column);
 			tk->line = l;
 			tk->column = cl;
-			caki_token_insert(h, tk);
+			caki_token_insert(tokens, tk);
 			break;
 		}
 		case ';':
@@ -102,7 +105,7 @@ CakiToken *caki_tokenize(FILE *stream)
 			tk->type = T_TERM;
 			tk->line = line;
 			tk->column = column;
-			caki_token_insert(h, tk);
+			caki_token_insert(tokens, tk);
 			break;
 		case '\n':
 			line++;
@@ -113,12 +116,12 @@ CakiToken *caki_tokenize(FILE *stream)
 				_ungetc(stream);
 				tk = caki_token_identifier(stream, &line,
 					 &column);
-				caki_token_insert(h, tk);
+				caki_token_insert(tokens, tk);
 			}
 			else if (isdigit(c)) {
 				_ungetc(stream);
 				tk = caki_token_number(stream, &line, &column);
-				caki_token_insert(h, tk);
+				caki_token_insert(tokens, tk);
 			}
 			else if (isspace(c))
 				break;
@@ -126,7 +129,7 @@ CakiToken *caki_tokenize(FILE *stream)
 				printf("Illegal character "
 					"(line %d, column %d): '%c'\n",\
 					 line, column, c);
-				caki_token_free(h);
+				caki_token_free(tokens);
 				exit(1);
 			}
 		}
@@ -135,34 +138,36 @@ CakiToken *caki_tokenize(FILE *stream)
 			column++;
 	}
 
-	tk = h->next;
-	free(h);
+	tk = tokens->next;
+	free(tokens);
 	return tk;
 }
 
 CakiToken *caki_token_number(FILE *s, int *line, int *column)
 {
-	CakiToken *out;
-	char *n, c;
-	int i, e, l = *line, cl = *column;
-	CakiTokenType t = T_INTEGER;
+	CakiToken *out;	/* Token that will be returned */
+	char *buff,	/* Temp buffer to store the number */
+		c;
+	int i, err, /* Error flag */
+		l = *line, cl = *column;
+	CakiTokenType type = T_INTEGER; /* Type of token, changes to T_FLOAT if we found a dot (.) */
 
-	n = malloc(32);
-	for (i = 0, e = 0; (c = getc(s)) != EOF && (isdigit(c) || c == '.') 
+	buff = malloc(32);
+	for (i = 0, err = 0; (c = getc(s)) != EOF && (isdigit(c) || c == '.') 
 		&& i < 32; i++) {
 		if (c == '.') {
-			if (t == T_FLOAT) 
-				e = 1;
-			t = T_FLOAT;
+			if (type == T_FLOAT) 
+				err = 1;
+			type = T_FLOAT;
 		}
 		update_position(c, (*line), (*column));
-		n[i] = c;
+		buff[i] = c;
 	}
-	n[i] = '\0';
+	buff[i] = '\0';
 
-	if (e) {
+	if (err) {
 		printf("Unknown number (line %d, column %d): %s\n",\
-			*line, *column, n);
+			*line, *column, buff);
 		exit(8);
 	}
 
@@ -170,8 +175,8 @@ CakiToken *caki_token_number(FILE *s, int *line, int *column)
 	(*column)--;
 
 	out = caki_token_new();
-	out->type = t;
-	out->content = n;
+	out->type = type;
+	out->content = buff;
 	out->line = l;
 	out->column = cl;
 	return out;
@@ -179,32 +184,32 @@ CakiToken *caki_token_number(FILE *s, int *line, int *column)
 
 CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
 {
-	char *o, c;
+	char *buff, c;
 	int i, l = *line, cl = *column;
 	CakiToken *out;
 
-	o = malloc(256);
+	buff = malloc(256);
 
 	for (i = 0; (c = getc(s)) != EOF && IS_IDENTIFIER(c) && i < 255; i++) {
 		update_position(c, (*line), (*column));
-		o[i] = c;
+		buff[i] = c;
 	}
-	o[i] = '\0';
+	buff[i] = '\0';
 
 	out = caki_token_new();
 	out->type = T_IDENTIFIER;
 	out->line = l;
 	out->column = cl;
-	out->content = o;
+	out->content = buff;
 	return out;
 }
 
 char *caki_token_string(FILE *s, int *line, int *column)
 {
-	char *o, c;
+	char *buff, c;
 	int i;
 
-	o = malloc(1024);
+	buff = malloc(1024);
 
 	for (i = 0; (c = getc(s)) != EOF && c != '"' && i < 1023; i++)
 	{
@@ -215,19 +220,19 @@ char *caki_token_string(FILE *s, int *line, int *column)
 
 			switch (c) {
 			case '\\':
-				o[i] = '\\';
+				buff[i] = '\\';
 				break;
 			case 'n':
-				o[i] = '\n';
+				buff[i] = '\n';
 				break;
 			case 'r':
-				o[i] = '\r';
+				buff[i] = '\r';
 				break;
 			case 't':
-				o[i] = '\t';
+				buff[i] = '\t';
 				break;
 			case 'a':
-				o[i] = '\a';
+				buff[i] = '\a';
 				break;
 			case 'x':
 			{
@@ -263,20 +268,20 @@ char *caki_token_string(FILE *s, int *line, int *column)
 					exit(7);
 				}
 
-				o[i] = d;
+				buff[i] = d;
 				break;
 			}
 			default:
-				o[i] = '\\';
-				o[++i] = c;
+				buff[i] = '\\';
+				buff[++i] = c;
 			}
 		}
 		else
-			o[i] = c;
+			buff[i] = c;
 	}
-	o[i] = '\0';
+	buff[i] = '\0';
 
-	return o;
+	return buff;
 }
 
 char *caki_get_token_name(CakiTokenType t)

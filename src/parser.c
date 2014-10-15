@@ -25,12 +25,7 @@
 #include "tokenizer.h"
 #include "caki.h"
 
-CakiNode *__caki_parse(FILE *);
-CakiNode *caki_parse_statement(CakiToken **);
-CakiNode *__caki_parse_node(CakiToken **);
-int caki_parser_accept(CakiToken *, CakiTokenType);
-void caki_parser_expect(CakiToken **, CakiTokenType);
-
+/* Parse the file pointer input */
 CakiNode *__caki_parse(FILE *input)
 {
 	CakiNode *root, *new;
@@ -55,6 +50,7 @@ CakiNode *caki_parse_statement(CakiToken **tk)
 	CakiNode *new = NULL;
 
 	if (caki_parser_accept(*tk, T_IDENTIFIER)) {
+		/* It's a indentifier */
 		new = caki_node_new();
 		new->name = (*tk)->content;
 	
@@ -64,30 +60,42 @@ CakiNode *caki_parse_statement(CakiToken **tk)
 			exit(1);
 		}
 		
+
+		/* Parse the value */
+
 		if (caki_parser_accept(*tk, T_INTEGER)) {
+			/* It's a integer */
 			int *integer;
+
 			integer = (int *) malloc(sizeof(int));
 			*integer = atoi((*tk)->content);
 			new->type = CAKI_TYPE_INT;
 			new->v_ptr = (void *) integer;
 		}
 		else if (caki_parser_accept(*tk, T_FLOAT)) {
+			/* It's a float */
 			float *ft;
+
 			ft = (float *) malloc(sizeof(float));
 			*ft = (float) atof((*tk)->content);
 			new->type = CAKI_TYPE_FLOAT;
 			new->v_ptr = (void *) ft;
 		}
 		else if (caki_parser_accept(*tk, T_STRING)) {
+			/* It's a string */
 			new->type = CAKI_TYPE_STR;
 			new->v_ptr = (void *) (*tk)->content;
 		}
 		else if (caki_parser_accept(*tk, T_LBRACE)) {
+			/* It's a left brace ({).
+			 * It indicates the begin of a subnode.
+			*/
 			new->type = CAKI_TYPE_NODE;
 			new->v_ptr = __caki_parse_node(tk);
 			return new;
 		}
 		else {
+			/* ERROR - NOT EXPECTED */
 			printf("Unexpected (line %d, column %d): %s!\n",\
 				(*tk)->line, (*tk)->column,\
 				caki_get_token_name((*tk)->type));
@@ -113,12 +121,15 @@ CakiNode *__caki_parse_node(CakiToken **tks)
 	root = caki_node_new();
 	
 	if (caki_parser_accept(*tks, T_LBRACE)) {
+		/* Parse the subnode */
 		*tks = (*tks)->next;
+
 		if (*tks == NULL) {
 			printf("Premature end of file\n");
 			exit(4);
 		}
 		
+		/* Parse a statement until find a right brace */
 		while ((*tks)->type != T_RBRACE)
 			caki_node_insert(root, caki_parse_statement(tks));
 
@@ -134,6 +145,8 @@ CakiNode *__caki_parse_node(CakiToken **tks)
 	}
 }
 
+
+/* Expects a CakiTokenType `t' or report error else */
 void caki_parser_expect(CakiToken **tk, CakiTokenType t)
 {
 	*tk = (*tk)->next;
@@ -153,6 +166,7 @@ void caki_parser_expect(CakiToken **tk, CakiTokenType t)
 	*tk = (*tk)->next;
 }
 
+/* Returns if the token is of the `type' given */
 int caki_parser_accept(CakiToken *t, CakiTokenType type)
 {
 	return (t->type == type);

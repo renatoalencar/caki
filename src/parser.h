@@ -18,7 +18,18 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "tokenizer.h"
+
 /* Parse a file pointer, save it into a Node and return it */
 CakiNode *__caki_parse(FILE *);
+
+/* Parse a statement - <key> <value>; */
+CakiNode *caki_parse_statement(CakiToken **);
+
+CakiNode *__caki_parse_node(CakiToken **);
+
+int caki_parser_accept(CakiToken *, CakiTokenType);
+
+void caki_parser_expect(CakiToken **, CakiTokenType);
 
 #endif /* !PARSER_H */

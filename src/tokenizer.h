@@ -21,23 +21,23 @@
 #define IS_IDENTIFIER(c) (c == '_' || isalnum(c))
 
 typedef enum {
-	T_COMMENT,
-	T_IDENTIFIER,
-	T_LBRACE,
-	T_RBRACE,
-	T_STRING,
-	T_NUMBER,
-	T_FLOAT,
-	T_INTEGER,
-	T_TERM
+	T_COMMENT,	/* A comment */
+	T_IDENTIFIER,	/* A indentifier */
+	T_LBRACE,	/* A left brace (begins a sunode) */
+	T_RBRACE,	/* A right brace (ends a subnode) */
+	T_STRING,	/* A string (") */
+	T_NUMBER,	/* A number (Not used yet) */
+	T_FLOAT,	/* A float number (Has a dot) */
+	T_INTEGER,	/* A integer */
+	T_TERM		/* A line terminator (;) */
 } CakiTokenType;
 
 struct _token {
-	char *content;
-	CakiTokenType type;
-	struct _token *next;
-	struct _token *end;
-	int line, column;
+	char *content;		/* Token's content */
+	CakiTokenType type;	/* Token's type */
+	struct _token *next;	/* The next token */
+	struct _token *end;	/* The last element of the list */
+	int line, column;	/* The line and column of the token */
 };
 
 typedef struct _token CakiToken;
