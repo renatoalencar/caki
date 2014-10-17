@@ -116,12 +116,15 @@ CakiNode *caki_parse_statement(CakiToken **tk)
 
 CakiNode *__caki_parse_node(CakiToken **tks)
 {
-	CakiNode *root, *o;
+	CakiNode *root;
 	
 	root = caki_node_new();
 	
 	if (caki_parser_accept(*tks, T_LBRACE)) {
 		/* Parse the subnode */
+
+		CakiNode *tmp;
+
 		*tks = (*tks)->next;
 
 		if (*tks == NULL) {
@@ -134,9 +137,9 @@ CakiNode *__caki_parse_node(CakiToken **tks)
 			caki_node_insert(root, caki_parse_statement(tks));
 
 		*tks = (*tks)->next;
-		o = root->next;
+		tmp = root->next;
 		free(root);
-		return root->next;
+		return tmp;
 	}
 	else {
 		printf("Expected Left Brace (line %d, column %d): %s\n",\
