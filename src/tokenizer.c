@@ -216,7 +216,7 @@ char *caki_token_string(FILE *s, int *line, int *column)
 		update_position(c, (*line), (*column));
 
 		if (c == '\\') {
-			update_position(c = getc(s), (*line), (*column));
+			update_position((c = getc(s)), (*line), (*column));
 
 			switch (c) {
 			case '\\':
@@ -238,7 +238,7 @@ char *caki_token_string(FILE *s, int *line, int *column)
 			{
 				char d = 0;
 
-				update_position(c = getc(s), (*line), (*column));
+				update_position((c = getc(s)), (*line), (*column));
 				
 				if (c >= 'a' && c <= 'f')
 					d = c - 'a' + 10;
@@ -253,7 +253,7 @@ char *caki_token_string(FILE *s, int *line, int *column)
 					exit(7);
 				}
 
-				update_position(c = getc(s), (*line), (*column));
+				update_position((c = getc(s)), (*line), (*column));
 
 				if (c >= 'a' && c <= 'f')
 					d = d*16 + c - 'a' + 10;
