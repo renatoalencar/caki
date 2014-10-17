@@ -43,15 +43,15 @@ typedef enum {
  * insertion to the end of the list.
  */
 
-struct _node {
+struct _cakinode {
 	char *name;		/* The node name */
 	void *v_ptr;		/* The pointer to the node value */
 	CakiNodeType type; 	/* The value type */
-	struct _node *next;     /* Pointer to next element in the list */
-	struct _node *end;	/* Pointer to last element in the list */
+	struct _cakinode *next;	/* Pointer to next element in the list */
+	struct _cakinode *end;	/* Pointer to last element in the list */
 };
 
-typedef struct _node CakiNode;
+typedef struct _cakinode CakiNode;
 
 
 
