@@ -204,6 +204,41 @@ CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
 	return out;
 }
 
+char caki_read_escape_char(FILE *s, int *line, int *column)
+{
+	char d = 0, c;
+
+	update_position((c = getc(s)), (*line), (*column));
+				
+	if (c >= 'a' && c <= 'f')
+		d = c - 'a' + 10;
+	else if (c >= 'A' && c <= 'F')
+		d = c - 'A' + 10;
+	else if (isdigit(c))
+		d = c - '0';
+	else {
+		printf("Unexpected (line "
+			"%d, column %d):  0x%c\n",\
+			 *line, *column, c);
+		exit(7);
+	}
+	update_position((c = getc(s)), (*line), (*column));
+	if (c >= 'a' && c <= 'f')
+		d = d*16 + c - 'a' + 10;
+	else if (c >= 'A' && c <= 'F')
+		d = d*16 + c - 'A' + 10;
+	else if (isdigit(c))
+		d = d*16 + c - '0';
+	else {
+		printf("Unexpected (line "
+			"%d, column %d):  0x%c\n",\
+			*line, *column, c);
+		exit(7);
+	}
+
+	return d;
+}
+
 char *caki_token_string(FILE *s, int *line, int *column)
 {
 	char *buff, c;
@@ -235,42 +270,8 @@ char *caki_token_string(FILE *s, int *line, int *column)
 				buff[i] = '\a';
 				break;
 			case 'x':
-			{
-				char d = 0;
-
-				update_position((c = getc(s)), (*line), (*column));
-				
-				if (c >= 'a' && c <= 'f')
-					d = c - 'a' + 10;
-				else if (c >= 'A' && c <= 'F')
-					d = c - 'A' + 10;
-				else if (isdigit(c))
-					d = c - '0';
-				else {
-					printf("Unexpected (line "
-						"%d, column %d):  0x%c\n",\
-						 *line, *column, c);
-					exit(7);
-				}
-
-				update_position((c = getc(s)), (*line), (*column));
-
-				if (c >= 'a' && c <= 'f')
-					d = d*16 + c - 'a' + 10;
-				else if (c >= 'A' && c <= 'F')
-					d = d*16 + c - 'A' + 10;
-				else if (isdigit(c))
-					d = d*16 + c - '0';
-				else {
-					printf("Unexpected (line "
-                                                "%d, column %d):  0x%c\n",\
-                                                 *line, *column, c);
-					exit(7);
-				}
-
-				buff[i] = d;
+				buff[i] = caki_read_escape_char(s, line, column);
 				break;
-			}
 			default:
 				buff[i] = '\\';
 				buff[++i] = c;
