@@ -33,7 +33,7 @@ clean:
 	rm $(OBJ)
 
 distclean: clean
-	rm libcaki.so libcaki.a Makefile
+	rm lib$(PACKAGE).so lib$(PACKAGE).a Makefile
 
 distdir: $(SOURCES)
 	cp $(SOURCES) $(distdir)
