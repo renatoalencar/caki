@@ -33,7 +33,7 @@ clean:
 	rm $(OBJ)
 
 distclean: clean
-	rm lib$(PACKAGE).so lib$(PACKAGE).a Makefile
+	rm $(CAKIDINAMIC) $(CAKISTATIC) Makefile
 
 distdir: $(SOURCES)
 	cp $(SOURCES) $(distdir)
