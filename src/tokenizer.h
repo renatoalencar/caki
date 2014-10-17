@@ -32,15 +32,15 @@ typedef enum {
 	T_TERM		/* A line terminator (;) */
 } CakiTokenType;
 
-struct _token {
-	char *content;		/* Token's content */
-	CakiTokenType type;	/* Token's type */
-	struct _token *next;	/* The next token */
-	struct _token *end;	/* The last element of the list */
-	int line, column;	/* The line and column of the token */
+struct _cakitoken {
+	char *content;			/* Token's content */
+	CakiTokenType type;		/* Token's type */
+	struct _cakitoken *next;	/* The next token */
+	struct _cakitoken *end;		/* The last element of the list */
+	int line, column;		/* The line and column of the token */
 };
 
-typedef struct _token CakiToken;
+typedef struct _cakitoken CakiToken;
 
 /* Allocate a new token */
 CakiToken *caki_token_new();
