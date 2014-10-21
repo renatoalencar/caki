@@ -33,9 +33,10 @@ CakiToken *caki_token_new()
 
 void caki_token_free(CakiToken *t)
 {
-	/* FIXME: free all memory
-	if (t->content != NULL && t->type != T_STRING)
-		free(t->content); */
+	
+	if (t->content != NULL && t->type != T_STRING &&
+		 t->type != T_IDENTIFIER)
+		free(t->content);
 
 	if (t->next != NULL)
 		caki_token_free(t->next);
@@ -46,14 +47,11 @@ void caki_token_free(CakiToken *t)
 int caki_token_insert(CakiToken *head, CakiToken *new) 
 {
 
-	if (head->next == NULL && head->end == NULL) {
-		head->next = new;
-		head->end = new;
-	}
-	else {
-		head->end->next = new;
-		head->end = new;
-	}
+	if (head->next == NULL && head->end == NULL) 
+		head->next = head->end = new;
+	else 
+		head->end->next = head->end = new;
+
 	return 0;
 }
 

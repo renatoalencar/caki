@@ -28,14 +28,10 @@ CakiNode *caki_node_new()
 void caki_node_insert(CakiNode *root, CakiNode *new)
 {
 
-	if (root->next == NULL && root->end == NULL) {
-		root->next = new;
-		root->end = new;
-	}
-	else {
-		root->end->next = new;
-		root->end = new;
-	}
+	if (root->next == NULL && root->end == NULL)
+		root->next = root->end = new;
+	else 
+		root->end->next = root->end = new;
 }
 
 void caki_node_free(CakiNode *root)
