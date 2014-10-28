@@ -26,10 +26,13 @@ CakiNode *__caki_parse(FILE *);
 /* Parse a statement - <key> <value>; */
 CakiNode *caki_parse_statement(CakiToken **);
 
+/* Parse a node - <key> { ... } */
 CakiNode *__caki_parse_node(CakiToken **);
 
+/* Return if token is of the type given */
 int caki_parser_accept(CakiToken *, CakiTokenType);
 
+/* Raise error if toke isn't of the type given */
 void caki_parser_expect(CakiToken **, CakiTokenType);
 
 #endif /* !PARSER_H */

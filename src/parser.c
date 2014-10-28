@@ -31,8 +31,8 @@ CakiNode *__caki_parse(FILE *input)
 	CakiNode *root, *new;
 	CakiToken *tk, *node;
 	
-	root = caki_node_new();
-	tk = caki_tokenize(input);
+	root = caki_node_new(); // Create a new node
+	tk = caki_tokenize(input); // Generate tokens
 	node = tk;
 	
 	while (node)
@@ -45,6 +45,7 @@ CakiNode *__caki_parse(FILE *input)
 	return new;
 }
 
+/* Parse a statement, a pair <key> <value>; */
 CakiNode *caki_parse_statement(CakiToken **tk)
 {
 	CakiNode *new = NULL;
@@ -114,6 +115,7 @@ CakiNode *caki_parse_statement(CakiToken **tk)
 	return new;
 }
 
+/* Parse a node, <key> { ... } */
 CakiNode *__caki_parse_node(CakiToken **tks)
 {
 	CakiNode *root;

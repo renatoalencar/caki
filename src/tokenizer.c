@@ -49,8 +49,10 @@ int caki_token_insert(CakiToken *head, CakiToken *new)
 
 	if (head->next == NULL && head->end == NULL) 
 		head->next = head->end = new;
-	else 
-		head->end->next = head->end = new;
+	else {
+		head->end->next = new;
+		head->end = new;
+	}
 
 	return 0;
 }
@@ -88,6 +90,7 @@ CakiToken *caki_tokenize(FILE *stream)
 			break;
 		case '"':
 		{
+			/* Save it before get the string */
 			int l = line, cl = column;
 
 			tk = caki_token_new();
@@ -202,6 +205,7 @@ CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
 	return out;
 }
 
+/* Read a character in stringa, in formata \x(HEX), eg.: \x0A */
 char caki_read_escape_char(FILE *s, int *line, int *column)
 {
 	char d = 0, c;
