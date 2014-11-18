@@ -96,4 +96,10 @@ int main(int argc, char **argv)
 
 -----------------------------------
 
+Compiling:
+	To compile your source using Caki library, you have to use
+the `-lcaki' flag. e.g.:
+
+gcc example.c -o example -lcaki
+
 For more information about functions read 'src/caki.h'
