@@ -17,7 +17,11 @@
 
 
 #include <stdio.h>
+
+#ifndef __MACH__
 #include <malloc.h>
+#endif
+
 #include <stdlib.h>
 #include "caki.h"
 #include "tokenizer.h"

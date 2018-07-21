@@ -18,7 +18,11 @@
 #include "node.h"
 #include <stdio.h>
 #include <ctype.h>
+
+#ifndef __MACH__
 #include <malloc.h>
+#endif
+
 #include <stdlib.h>
 
 #include "parser.h"
