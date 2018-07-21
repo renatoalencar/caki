@@ -99,7 +99,7 @@ namespace caki
     napi_status status;
     napi_value fn;
 
-    status = napi_create_function(env, nullptr, 0, parse, nullptr, &fn);
+    status = napi_create_function(env, "parse", 0, parse, nullptr, &fn);
     if (status != napi_ok) return nullptr;
 
     status = napi_set_named_property(env, exports, "parse", fn);
