@@ -1,0 +1,26 @@
+{
+  "name": "caki",
+  "version": "1.0.0",
+  "description": "A persitent data reader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renatoalencar/caki.git"
+  },
+  "keywords": [
+    "caki",
+    "parser",
+    "config"
+  ],
+  "author": "Renato Alencar <renatoalencar.73@gmail.com>",
+  "license": "GPL 3",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/renatoalencar/caki/issues"
+  },
+  "homepage": "https://github.com/renatoalencar/caki#readme"
+}

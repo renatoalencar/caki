@@ -1,0 +1,11 @@
+# This is an example file
+
+name "George Lucas";
+
+login {
+	username "root";
+	password "123456";
+}
+
+pi 3.14159;
+bits 32;
