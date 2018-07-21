@@ -72,9 +72,10 @@ namespace caki
   napi_value parse(napi_env env, napi_callback_info info)
   {
     napi_status status;
+    napi_value filename_value;
+    napi_value root_object;
     CakiNode *root;
     char *filename;
-    napi_value filename_value;
     size_t filename_length;
     size_t argc = 1;
 
@@ -90,8 +91,10 @@ namespace caki
     assert(status == napi_ok);
 
     root = caki_parse(filename);
+    root_object = caki_node_to_object(env, root);
+    caki_free(root);
 
-    return caki_node_to_object(env, root);
+    return root_object;
   }
 
   napi_value init(napi_env env, napi_value exports)
