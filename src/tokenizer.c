@@ -15,14 +15,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#include <stdio.h>
-
 #ifndef __MACH__
 #include <malloc.h>
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "caki.h"
 #include "tokenizer.h"
 
