@@ -15,6 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "tape.h"
+
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
@@ -52,16 +54,16 @@ void caki_token_free(CakiToken *);
 int caki_token_insert(CakiToken *, CakiToken *);
 
 /* Generate tokens from a file pointer */
-CakiToken *caki_tokenize(FILE *);
+CakiToken *caki_tokenize(CakiTape *);
 
 /* Read a numeric token */
-CakiToken *caki_token_number(FILE *, int *, int *);
+CakiToken *caki_token_number(CakiTape *, int *, int *);
 
 /* Tokenizes a identifier */
-CakiToken *caki_token_identifier(FILE *, int *, int *);
+CakiToken *caki_token_identifier(CakiTape *, int *, int *);
 
 /* Tokenizes a string */
-char *caki_token_string(FILE *, int *, int *);
+char *caki_token_string(CakiTape *, int *, int *);
 
 /* Returns the token's name */
 char *caki_get_token_name(CakiTokenType );

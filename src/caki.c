@@ -21,17 +21,21 @@
 #include "caki.h"
 #include "node.h"
 #include "parser.h"
+#include "tape.h"
 
-CakiNode *caki_parse(char *filename)
+CakiNode *caki_parse(void *buffer, size_t length)
 {
-	FILE *fd;
 	CakiNode *out;
+	CakiTape *tape;
 
-	if ((fd = fopen(filename, "r")) == NULL)
+	if (buffer == NULL)
 		return NULL;
 
-	out = __caki_parse(fd);
-	fclose(fd);
+	tape = caki_tape_new(buffer, length);
+
+	out = __caki_parse(tape);
+
+	caki_tape_free(tape);
 
 	return out;
 }

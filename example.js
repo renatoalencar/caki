@@ -1,3 +1,6 @@
 const caki = require('./index');
+const fs = require('fs');
 
-console.log(JSON.stringify(caki.parse('example.txt'), undefined, 2));
+const fileContent = fs.readFileSync('example.txt');
+const example = caki.parse(fileContent);
+console.log(JSON.stringify(example, undefined, 2));

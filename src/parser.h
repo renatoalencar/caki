@@ -15,13 +15,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "tape.h"
+
 #ifndef PARSER_H
 #define PARSER_H
 
 #include "tokenizer.h"
 
 /* Parse a file pointer, save it into a Node and return it */
-CakiNode *__caki_parse(FILE *);
+CakiNode *__caki_parse(CakiTape *tape);
 
 /* Parse a statement - <key> <value>; */
 CakiNode *caki_parse_statement(CakiToken **);

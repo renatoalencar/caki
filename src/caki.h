@@ -15,6 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stddef.h>
+
 #ifndef _CAKI_H
 #define _CAKI_H
 
@@ -59,7 +61,7 @@ typedef struct _cakinode CakiNode;
  *
  * filename: Recepts the filename with the definitions.
  */
-CakiNode *caki_parse(char *filename);
+CakiNode *caki_parse(void *buffer, size_t length);
 
 
 

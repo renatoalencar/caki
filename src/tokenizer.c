@@ -24,9 +24,8 @@
 #include <ctype.h>
 #include "caki.h"
 #include "tokenizer.h"
+#include "tape.h"
 
-#define IGNORE_LINE(s) while(getc(s) != '\n');
-#define _ungetc(s) fseek(s, -1, SEEK_CUR)
 #define update_position(c, l, cl)  if (c == '\n') { l++; cl = 0; } else cl++;
 
 CakiToken *caki_token_new()
@@ -61,7 +60,7 @@ int caki_token_insert(CakiToken *head, CakiToken *new)
 }
 
 /* Generate tokens of `stream' */
-CakiToken *caki_tokenize(FILE *stream)
+CakiToken *caki_tokenize(CakiTape *stream)
 {
 	char c;
 	CakiToken *tokens, *tk;
@@ -69,11 +68,11 @@ CakiToken *caki_tokenize(FILE *stream)
 
 	tokens = caki_token_new();
 
-	while ((c = getc(stream)) != EOF) {
+	while ((c = caki_tape_forward(stream)) != END_OF_TAPE) {
 		switch (c) {
 		case '#':
 			/* Ignore comments */
-			IGNORE_LINE(stream);
+			caki_tape_consume_until(stream, '\n');
 			line++;
 			column = 0;
 			break;
@@ -117,13 +116,13 @@ CakiToken *caki_tokenize(FILE *stream)
 			break;
 		default:
 			if (isalpha(c) || c == '_') {
-				_ungetc(stream);
+				caki_tape_backward(stream);
 				tk = caki_token_identifier(stream, &line,
 					 &column);
 				caki_token_insert(tokens, tk);
 			}
 			else if (isdigit(c)) {
-				_ungetc(stream);
+				caki_tape_backward(stream);
 				tk = caki_token_number(stream, &line, &column);
 				caki_token_insert(tokens, tk);
 			}
@@ -147,7 +146,7 @@ CakiToken *caki_tokenize(FILE *stream)
 	return tk;
 }
 
-CakiToken *caki_token_number(FILE *s, int *line, int *column)
+CakiToken *caki_token_number(CakiTape *s, int *line, int *column)
 {
 	CakiToken *out;	/* Token that will be returned */
 	char *buff,	/* Temp buffer to store the number */
@@ -157,7 +156,7 @@ CakiToken *caki_token_number(FILE *s, int *line, int *column)
 	CakiTokenType type = T_INTEGER; /* Type of token, changes to T_FLOAT if we found a dot (.) */
 
 	buff = malloc(32);
-	for (i = 0, err = 0; (c = getc(s)) != EOF && (isdigit(c) || c == '.') 
+	for (i = 0, err = 0; (c = caki_tape_forward(s)) != END_OF_TAPE && (isdigit(c) || c == '.') 
 		&& i < 32; i++) {
 		if (c == '.') {
 			if (type == T_FLOAT) 
@@ -175,7 +174,7 @@ CakiToken *caki_token_number(FILE *s, int *line, int *column)
 		exit(8);
 	}
 
-	_ungetc(s);
+	caki_tape_backward(s);
 	(*column)--;
 
 	out = caki_token_new();
@@ -186,7 +185,7 @@ CakiToken *caki_token_number(FILE *s, int *line, int *column)
 	return out;
 }
 
-CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
+CakiToken *caki_token_identifier(CakiTape *s, int *line, int *column)
 {
 	char *buff, c;
 	int i, l = *line, cl = *column;
@@ -194,7 +193,7 @@ CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
 
 	buff = malloc(256);
 
-	for (i = 0; (c = getc(s)) != EOF && IS_IDENTIFIER(c) && i < 255; i++) {
+	for (i = 0; (c = caki_tape_forward(s)) != END_OF_TAPE && IS_IDENTIFIER(c) && i < 255; i++) {
 		update_position(c, (*line), (*column));
 		buff[i] = c;
 	}
@@ -209,11 +208,11 @@ CakiToken *caki_token_identifier(FILE *s, int *line, int *column)
 }
 
 /* Read a character in stringa, in formata \x(HEX), eg.: \x0A */
-char caki_read_escape_char(FILE *s, int *line, int *column)
+char caki_read_escape_char(CakiTape *s, int *line, int *column)
 {
 	char d = 0, c;
 
-	update_position((c = getc(s)), (*line), (*column));
+	update_position((c = caki_tape_forward(s)), (*line), (*column));
 				
 	if (c >= 'a' && c <= 'f')
 		d = c - 'a' + 10;
@@ -227,7 +226,7 @@ char caki_read_escape_char(FILE *s, int *line, int *column)
 			 *line, *column, c);
 		exit(7);
 	}
-	update_position((c = getc(s)), (*line), (*column));
+	update_position((c = caki_tape_forward(s)), (*line), (*column));
 	if (c >= 'a' && c <= 'f')
 		d = d*16 + c - 'a' + 10;
 	else if (c >= 'A' && c <= 'F')
@@ -244,19 +243,19 @@ char caki_read_escape_char(FILE *s, int *line, int *column)
 	return d;
 }
 
-char *caki_token_string(FILE *s, int *line, int *column)
+char *caki_token_string(CakiTape *s, int *line, int *column)
 {
 	char *buff, c;
 	int i;
 
 	buff = malloc(1024);
 
-	for (i = 0; (c = getc(s)) != EOF && c != '"' && i < 1023; i++)
+	for (i = 0; (c = caki_tape_forward(s)) != END_OF_TAPE && c != '"' && i < 1023; i++)
 	{
 		update_position(c, (*line), (*column));
 
 		if (c == '\\') {
-			update_position((c = getc(s)), (*line), (*column));
+			update_position((c = caki_tape_forward(s)), (*line), (*column));
 
 			switch (c) {
 			case '\\':

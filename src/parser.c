@@ -28,9 +28,10 @@
 #include "parser.h"
 #include "tokenizer.h"
 #include "caki.h"
+#include "tape.h"
 
 /* Parse the file pointer input */
-CakiNode *__caki_parse(FILE *input)
+CakiNode *__caki_parse(CakiTape *input)
 {
 	CakiNode *root, *new;
 	CakiToken *tk, *node;

@@ -7,7 +7,8 @@
         "./src/caki.c",
         "./src/node.c",
         "./src/parser.c",
-        "./src/tokenizer.c"
+        "./src/tokenizer.c",
+        "./src/tape.c"
       ]
     }
   ]

@@ -89,29 +89,24 @@ namespace caki
   napi_value parse(napi_env env, napi_callback_info info)
   {
     napi_status status;
-    napi_value filename_value;
-    napi_value root_object;
-    CakiNode *root;
-    char *filename;
-    size_t filename_length;
+    napi_value arg;
     size_t argc = 1;
+    void *buffer;
+    size_t buffer_length;
+    napi_value result;
+    CakiNode *root;
 
-    status = napi_get_cb_info(env, info, &argc, &filename_value, nullptr, nullptr);
+    status = napi_get_cb_info(env, info, &argc, &arg, nullptr, nullptr);
     assert(status == napi_ok);
 
-    status = napi_get_value_string_utf8(env, filename_value, nullptr, 0, &filename_length);
+    status = napi_get_buffer_info(env, arg, &buffer, &buffer_length);
     assert(status == napi_ok);
 
-    filename = (char *) malloc(filename_length + 1);
-
-    status = napi_get_value_string_utf8(env, filename_value, filename, filename_length + 1, nullptr);
-    assert(status == napi_ok);
-
-    root = caki_parse(filename);
-    root_object = caki_node_to_object(env, root);
+    root = caki_parse(buffer, buffer_length);
+    result = caki_node_to_object(env, root);
     caki_free(root);
 
-    return root_object;
+    return result;
   }
 
   napi_value init(napi_env env, napi_value exports)
