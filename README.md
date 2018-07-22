@@ -59,9 +59,10 @@ Then you can import and parse it:
 
 ```js
 const caki = require('caki');
+const fs = require('fs');
 
-const example = caki.parse('example.txt');
-
+const fileContent = fs.readFileSync('example.txt');
+const example = caki.parse(fileContent);
 console.log(JSON.stringify(example, undefined, 2));
 ```
 
